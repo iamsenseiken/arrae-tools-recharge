@@ -1,79 +1,160 @@
+Here is the content, with backticks replaced by '`', in a code block:
 
-
-# Recharge Cross-Match Filter
+```markdown
+# Recharge Shift Tool
 
 ## Overview
 
-The Recharge Cross-Match Filter is a Python script designed to cross-match and filter customer data from two CSV files: a reference file and a current file. The script processes the data, filters it based on specific criteria, and outputs the results to various CSV files.
+**Recharge Shift** is a Python script designed to process and reschedule customer subscription data. It cross-matches data from reference and current CSV files, applies filters, and reschedules charges based on specified criteria.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Command-Line Arguments](#command-line-arguments)
+- [Functionality](#functionality)
+- [Output](#output)
+- [Example](#example)
+- [Logging](#logging)
+- [License](#license)
+- [Contributing](#contributing)
 
 ## Requirements
 
-To run the script, you need to have the following Python packages installed:
+To run the script, ensure you have **Python 3.x** installed along with the following packages:
 
-- pandas
-- chardet
-- argparse
+- `pandas`
+- `openpyxl`
 
-You can install the required packages using the following command:
+## Installation
 
+Install the required Python packages using `pip`:
 
-pip install pandas chardet argparse
-
+`bash
+pip install pandas openpyxl
+`
 
 ## Usage
 
-To use the script, run the following command:
+Run the script using the following command:
 
+`bash
+python recharge_shift.py \
+  --reference-file <path_to_reference_file> \
+  --current-file <path_to_current_file> \
+  --output-folder <path_to_output_folder> \
+  --base-name <output_base_name> \
+  --reschedule-date <new_date> \
+  [--product-title <product_title>]
+`
 
-python recharge/cross_match_filter.py --reference-file <path_to_reference_file> --current-file <path_to_current_file> --audit-passed-file <path_to_audit_passed_file> --candidate-file <path_to_candidate_file> --candidate-sparse-file <path_to_candidate_sparse_file> --audit-failed-file <path_to_audit_failed_file>
+## Command-Line Arguments
 
-
-### Command-Line Arguments
-
-- `--reference-file`: Path to the reference CSV file.
-- `--current-file`: Path to the current CSV file.
-- `--audit-passed-file`: Path to the audit CSV file for passed records.
-- `--candidate-file`: Path to the candidate CSV file.
-- `--candidate-sparse-file`: Path to the candidate sparse CSV file.
-- `--audit-failed-file`: Path to the audit CSV file for failed records.
+- `--reference-file`: *(Optional)* Path to the reference CSV file containing subscription data.
+- `--current-file`: *(Required)* Path to the current CSV file with charge data to be processed.
+- `--output-folder`: *(Required)* Path to the folder where output files will be saved.
+- `--base-name`: *(Required)* Base name for the output files.
+- `--reschedule-date`: *(Required)* The date to reschedule charges to, in `YYYY-MM-DD` format (e.g., `"2023-05-01"`).
+- `--product-title`: *(Optional)* The product title to filter on.
 
 ## Functionality
 
 The script performs the following steps:
 
-1. **Encoding Detection**: Detects the encoding of the reference and current CSV files.
-2. **Reading Files**: Reads the reference and current CSV files into pandas DataFrames.
-3. **Patching Data**: Cleans and patches the data to ensure consistency.
-4. **Filtering Data**: Filters the reference data for paused subscriptions and matches the current data against the reference data.
-5. **Slicing Results**: Retains only specific columns in the results.
-6. **Transforming Results**: Transforms the results by adding new columns and modifying existing ones.
-7. **Deduplicating Results**: Removes consecutive duplicate records from the results.
-8. **Outputting Results**: Writes the results to various CSV files.
+1. **Data Loading**:
+   - Reads and processes the reference file (if provided).
+   - Reads the current file.
 
-## Logging
+2. **Filtering**:
+   - Applies filters based on subscription status.
+   - Filters by product title if specified.
 
-The script uses the `logging` module to log information, warnings, and errors during execution. The log messages provide insights into the processing steps and any issues encountered.
+3. **Rescheduling**:
+   - Reschedules charges for matching records to the specified date.
+
+4. **Output Generation**:
+   - Generates output files including:
+     - A CSV file with rescheduled candidates.
+     - An Excel workbook with multiple sheets containing detailed information.
+
+## Output
+
+The script generates the following output files in the specified output folder:
+
+1. `<base_name>_candidates.csv`:  
+   CSV file containing the rescheduled candidates.
+
+2. `<base_name>_workbook.xlsx`:  
+   Excel workbook with multiple sheets:
+   
+   - **Candidates**: Trimmed list of rescheduled candidates.
+   - **Rejected**: Trimmed list of rejected candidates.
+   - **Hits Raw**: Raw data of matching records.
+   - **Misses Raw**: Raw data of non-matching records.
+   - **Reference**: Reference data (if provided).
+   - **Current Unpatched**: Original current data.
+   - **Current Patched**: Processed current data.
 
 ## Example
 
-Here is an example command to run the script:
+Here's an example command to run the script:
 
+`bash
+python recharge_shift.py \
+  --reference-file data/reference.csv \
+  --current-file data/current.csv \
+  --output-folder output \
+  --base-name may_reschedule \
+  --reschedule-date 2023-05-15 \
+  --product-title "Monthly Box"
+`
 
-python recharge/cross_match_filter.py --reference-file data/reference.csv --current-file data/current.csv --audit-passed-file output/audit_passed.csv --candidate-file output/candidate.csv --candidate-sparse-file output/candidate_sparse.csv --audit-failed-file output/audit_failed.csv
+**Description**:  
+This command processes the `reference.csv` and `current.csv` files, reschedules charges for the "Monthly Box" product to May 15, 2023, and outputs the results to the `output` folder with the base name `may_reschedule`.
 
+## Logging
 
-This command will process the `reference.csv` and `current.csv` files, and output the results to the specified CSV files in the `output` directory.
+The script utilizes Python's `logging` module to provide detailed information about its progress and any issues encountered during execution. Logs include:
+
+- Start and completion of major steps.
+- Number of records processed, matched, and rescheduled.
+- Any errors or warnings during processing.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE). See the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+Contributions are welcome! Please follow these steps:
 
-## Contact
+1. **Fork the Repository**
 
-For any questions or inquiries, please contact [your_email@example.com].
+2. **Create a Feature Branch**
 
+   `bash
+   git checkout -b feature/YourFeature
+   `
 
+3. **Commit Your Changes**
+
+   `bash
+   git commit -m "Add some feature"
+   `
+
+4. **Push to the Branch**
+
+   `bash
+   git push origin feature/YourFeature
+   `
+
+5. **Open a Pull Request**
+
+Please open an issue or submit a pull request for any improvements or bug fixes.
+
+---
+
+*Thank you for using the Recharge Shift Tool!*
+```
