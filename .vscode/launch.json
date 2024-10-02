@@ -1,0 +1,34 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Run with no-cross",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",  // or specify the path to your script
+            "console": "integratedTerminal",
+            "args": [
+                "--current-file",
+                "../../raw/charges_queued-2024_09_30-23_31_05.csv",
+                "--output-folder",
+                "../../cooked",
+                "--base-name",
+                "2024_09_30-23_31_05",
+                "--reschedule-date",
+                "12/01/2024",
+                "--product-title",
+                "Mini Calm"
+            ]
+        }
+    ]
+}

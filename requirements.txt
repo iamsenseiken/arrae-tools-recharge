@@ -1,0 +1,4 @@
+pandas
+chardet
+argparse
+openpyxl
